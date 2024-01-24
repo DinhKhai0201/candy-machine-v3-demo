@@ -1,3 +1,4 @@
+// https://www.quicknode.com/guides/solana-development/nfts/how-to-create-a-solana-nft-collection-using-candy-machine-v3-and-typescript
 import {
   CreateCandyMachineInput,
   DefaultCandyGuardSettings,
@@ -8,7 +9,7 @@ import {
   toDateTime,
 } from "@metaplex-foundation/js";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import secret from "./guideSecret.json";
+import secret from "./my-keypair.json";
 
 const QUICKNODE_RPC = "https://api.devnet.solana.com"; // 👈 Replace with your QuickNode Solana Devnet HTTP Endpoint
 const SESSION_HASH = "QNDEMO" + Math.ceil(Math.random() * 1e9); // Random unique identifier for your session
@@ -64,6 +65,13 @@ async function generateCandyMachine() {
   );
 }
 
+async function getCandyMachine() {
+  const candyMachine = await METAPLEX.candyMachines().findByAddress({
+    address: new PublicKey(CANDY_MACHINE_ID),
+  });
+  console.log(candyMachine);
+}
+
 async function updateCandyMachine() {
   const candyMachine = await METAPLEX.candyMachines().findByAddress({
     address: new PublicKey(CANDY_MACHINE_ID),
@@ -115,17 +123,24 @@ async function addItems() {
   );
 }
 async function mintNft() {
-    const candyMachine = await METAPLEX
-        .candyMachines()
-        .findByAddress({ address: new PublicKey(CANDY_MACHINE_ID) }); 
-    let { nft, response } = await METAPLEX.candyMachines().mint({
-        candyMachine,
-        collectionUpdateAuthority: WALLET.publicKey,
-        },{commitment:'finalized'})
+  const candyMachine = await METAPLEX.candyMachines().findByAddress({
+    address: new PublicKey(CANDY_MACHINE_ID),
+  });
+  let { nft, response } = await METAPLEX.candyMachines().mint(
+    {
+      candyMachine,
+      collectionUpdateAuthority: WALLET.publicKey,
+    },
+    { commitment: "finalized" }
+  );
 
-    console.log(`✅ - Minted NFT: ${nft.address.toString()}`);
-    console.log(`     https://explorer.solana.com/address/${nft.address.toString()}?cluster=devnet`);
-    console.log(`     https://explorer.solana.com/tx/${response.signature}?cluster=devnet`);
+  console.log(`✅ - Minted NFT: ${nft.address.toString()}`);
+  console.log(
+    `     https://explorer.solana.com/address/${nft.address.toString()}?cluster=devnet`
+  );
+  console.log(
+    `     https://explorer.solana.com/tx/${response.signature}?cluster=devnet`
+  );
 }
 
 // 1. run npx ts-node app
@@ -136,4 +151,5 @@ async function mintNft() {
 // updateCandyMachine();
 
 // addItems();
-mintNft();
+// mintNft();
+getCandyMachine()
